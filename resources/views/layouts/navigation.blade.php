@@ -36,8 +36,56 @@
 
                     <span class="dark:hidden">🌙</span>
                     <span class="hidden dark:inline">☀️</span>
-
                 </button>
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = ! open" class="relative p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+
+                        @if($criticalCount > 0)
+                        <span class="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white">
+                            {{ $criticalCount }}
+                        </span>
+                        @endif
+                    </button>
+                    <div x-show="open" @click.outside="open = false" style="display: none;"
+                        class="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-2 z-50">
+
+                        <div class="px-4 py-2 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+                            <span class="font-bold text-sm text-gray-800 dark:text-gray-200">Notifikasi Stok</span>
+                            <span class="text-xs bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 px-2 py-0.5 rounded-full font-semibold">
+                                {{ $criticalCount }} Perhatian
+                            </span>
+                        </div>
+
+                        <div class="max-h-64 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-700">
+                            @forelse($criticalProducts as $item)
+                            <a href="{{ route('products.show', $item->id) }}" class="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-800 dark:text-gray-200">{{ $item->title }}</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                                            @if($item->stock == 0)
+                                            <span class="text-gray-600 dark:text-gray-400 font-bold">Stok habis</span>
+                                            @else
+                                            <span class="text-red-600 dark:text-red-400 font-semibold">Stok tersisa: {{ $item->stock }}</span>
+                                            @endif
+                                        </p>
+                                    </div>
+                                    <span class="text-lg">
+                                        @if($item->stock == 0) 🔴 @else ⚠️ @endif
+                                    </span>
+                                </div>
+                            </a>
+                            @empty
+                            <div class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
+                                🎉 Semua stok barang aman!
+                            </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
